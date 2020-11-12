@@ -1,7 +1,8 @@
+#!/usr/bin/env python 
 import gc
 import typer
-from familytree import FamilyTree
-from familytree import RelationType
+from src.familytree import FamilyTree
+from src.familytree import RelationType
 
 # Command line Interface requirements
 app = typer.Typer()

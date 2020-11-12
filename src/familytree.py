@@ -2,7 +2,7 @@ import json
 import atexit
 import os
 from enum import Enum
-import config_management
+from src import config_management
 
 import networkx as nx
 import matplotlib.pyplot as plt

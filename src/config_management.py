@@ -2,6 +2,7 @@ import os
 import configparser
 
 config = configparser.ConfigParser()
+base_config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
 
 def initialize_config_defaults():
     config_path = os.path.expanduser("~")
@@ -16,14 +17,13 @@ def initialize_config_defaults():
         "familytree_graph_path": os.path.join(config_path, "cache.graphml"),
     }
 
-    with open('config.ini', "w") as configfile:
+    with open(base_config_path, "w") as configfile:
         config.write(configfile)
 
 
 def read_config():
-    base_config_path = 'config.ini'
     if not os.path.exists(base_config_path):
         initialize_config_defaults()
-    config.read('config.ini')
+    config.read(base_config_path)
     return config
         

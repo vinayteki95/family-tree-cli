@@ -1,6 +1,6 @@
 import pytest
-from familytree import FamilyTree
-from familytree import RelationType
+from src.familytree import FamilyTree
+from src.familytree import RelationType
 
 @pytest.fixture
 def ft_clean():
