@@ -2,20 +2,31 @@ import json
 import atexit
 import os
 from enum import Enum
+import config_management
 
 import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 
 class RelationType(str, Enum):
+    """
+        RelationType Enum
+        prevgen -> one step above in family tree hierarchy (mother, father)
+        nextgen -> one step below in family tree hierarchy (son, daughter)
+        samegen -> same level in family tree hierarchy (brother, sister)
+        partner -> same level in family tree but common children (wife / step wife / husband / step husband)
+    """
     prevgen = "prevgen"
     nextgen = "nextgen"
     samegen = "samegen"
     partner = "partner"
 
+
 class FamilyTree:
 
     def __init__(self):
+        
+        self.config = config_management.read_config() # Maintains persistent configuration files 
         self.graph = nx.DiGraph()
         self.all_relations = {}
         self._count_relation_cyclic_break = {}
@@ -27,25 +38,30 @@ class FamilyTree:
         
         atexit.register(cleanup)
     
+
     def _read_cached_graph(self):
         try:
-            self.graph = nx.read_graphml("cache.graphml")
-            with open("cache.json", "r") as filebuf:
+            self.graph = nx.read_graphml(self.config['DEFAULT']['familytree_graph_path'])
+            with open(self.config['DEFAULT']['relationships_list_path'], "r") as filebuf:
                 self.all_relations = json.load(filebuf)
         except:
             pass
 
+
     def _write_cached_graph(self):
         temp = self.graph
-        nx.write_graphml(temp, "cache.graphml")
-        with open("cache.json", "w") as filebuf:
+        nx.write_graphml(temp, self.config['DEFAULT']['familytree_graph_path'])
+        with open(self.config['DEFAULT']['relationships_list_path'], "w") as filebuf:
             json.dump(self.all_relations, filebuf)
+
 
     def add_relationship(self, relation: str, relation_type: RelationType):
         self.all_relations[relation] = relation_type
 
+
     def add_person(self, person: str):
         self.graph.add_node(person)
+
 
     def connect_people(self, person1, person2, relation):
         if self.all_relations.get(relation, None):
@@ -53,12 +69,14 @@ class FamilyTree:
         else:
             raise Exception("Mentioned relation: {} doesn't exist - you can create one with 'add relationship command'")
 
+
     def count_relation(self, person, relation, all =False):
         relation_type = self.all_relations[relation]
         neighbors = list([(v,e["relation"]) for u,v,e in self.graph.edges(person, True) if self.all_relations[e["relation"]]==relation_type])
         neighbors += list([(u,e["relation"]) for u,v,e in self.graph.in_edges(person, True) if self.all_relations[e["relation"]]==RelationType.prevgen])
 
         # If we are counting next generation people, we might as well add partner (wife/husband's children)
+        # this section of code can be moved to a different function when adding more rules for different types of relations
         if relation_type == RelationType.nextgen:
             partners = [(v,e["relation"]) for u,v,e in self.graph.edges(person, True) if self.all_relations[e["relation"]]==RelationType.partner]
             partners += [(u,e["relation"]) for u,v,e in self.graph.in_edges(person, True) if self.all_relations[e["relation"]]==RelationType.partner]
@@ -84,19 +102,23 @@ class FamilyTree:
         return count
 
 
-    
     def create_family_tree_image(self):
         pos =graphviz_layout(self.graph, prog='dot')
         nx.draw(self.graph , pos, with_labels=True, font_weight='bold')
         nx.draw_networkx_edge_labels(self.graph, pos, edge_labels={k:v.get("relation") for k,v in dict(self.graph.edges()).items()})
-        plt.savefig("cache.png")
-    
+        try:
+            plt.savefig(self.config['DEFAULT']['familytree_image_path'])
+        except:
+            pass
+
+
     def clear(self):
         self.graph = nx.DiGraph()
         self.all_relations = {}
         current_path = os.path.dirname(os.path.abspath(__name__))
 
-        paths_of_interest = [os.path.join(current_path,x) for x in ["cache.graphml", "cache.png", "cache.json"]]
+        list_of_paths = list(self.config['DEFAULT'].values())
+        paths_of_interest = [os.path.join(current_path,x) for x in list_of_paths]
 
         for clear_path in paths_of_interest:
             if os.path.exists(clear_path):
