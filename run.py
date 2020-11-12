@@ -3,10 +3,12 @@ import typer
 from familytree import FamilyTree
 from familytree import RelationType
 
+# Command line Interface requirements
 app = typer.Typer()
 add_app = typer.Typer()
 app.add_typer(add_app, name = "add")
 
+# Instantiating familytree
 ft = FamilyTree()
 
 @add_app.command("person")
@@ -32,4 +34,3 @@ def clear():
 
 if __name__ == "__main__":
     app()
-    # ft.count_relation_new("surya", "son", all=True)
