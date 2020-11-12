@@ -1,16 +1,16 @@
-import networkx as nx
 import json
 import atexit
 import os
 from enum import Enum
 
+import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 
 class RelationType(str, Enum):
     prevgen = "prevgen"
     nextgen = "nextgen"
-    samegem = "samegen"
+    samegen = "samegen"
     partner = "partner"
 
 class FamilyTree:
@@ -65,7 +65,7 @@ class FamilyTree:
             for p in partners:
                 p = p[0]
                 neighbors += [(v,e["relation"]) for u,v,e in self.graph.edges(p, True) if self.all_relations[e["relation"]]==relation_type]
-                neighbors += [(u,e["relation"]) for u,v,e in self.graph.in_edges(p, True) if self.all_relations[e["relation"]]==relation_type]
+                neighbors += [(u,e["relation"]) for u,v,e in self.graph.in_edges(p, True) if self.all_relations[e["relation"]]==RelationType.prevgen]
                 neighbors = list(set(neighbors)) # eliminate duplicates
         else:
             partners = []
@@ -73,13 +73,14 @@ class FamilyTree:
         count = len([x for x in neighbors if x[1] == relation])
         # print(count)
 
-        print(neighbors)
+        # print(neighbors)
 
         if len(neighbors) > 0 and all:
             for n in neighbors:
                 if self._count_relation_cyclic_break.get(n,None) is None:
                     self._count_relation_cyclic_break[n] = 1
                     count += self.count_relation(n[0], relation, all=all)
+        self._count_relation_cyclic_break = {}  # breaks cycles at only depth one - need to figure out a better way to do this
         return count
 
 
