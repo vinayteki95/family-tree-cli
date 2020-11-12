@@ -6,21 +6,21 @@ Typical usage patterns:
 
 Check the file `commandline_test.sh`
 
-```bash
+```console
 
-./familytree clear # removes pre-existing persistent files for current testing
+horus@eye:~/family-tree-cli$ ./familytree clear # removes pre-existing persistent files for current testing
 
-./familytree add relationship son nextgen # add a relationship called son of type nextgen
+horus@eye:~/family-tree-cli$ ./familytree add relationship son nextgen # add a relationship called son of type nextgen
 
-./familytree add relationship wife partner # add a relationship called son of type partner
+horus@eye:~/family-tree-cli$ ./familytree add relationship wife partner # add a relationship called son of type partner
 
-./familytree add person kid2 # add a person called kid2
+horus@eye:~/family-tree-cli$ ./familytree add person kid2 # add a person called kid2
 
-./familytree connect kid2 --relation son --of rick # kid2 is son of rick
+horus@eye:~/family-tree-cli$ ./familytree connect kid2 --relation son --of rick # kid2 is son of rick
 
-./familytree count rick --relation son # no of immediate sons of rick
+horus@eye:~/family-tree-cli$ ./familytree count rick --relation son # no of immediate sons of rick
 
-./familytree count rick --relation son --all # no of sons (at all levels of heirarchy) of rick
+horus@eye:~/family-tree-cli$ ./familytree count rick --relation son --all # no of sons (at all levels of heirarchy) of rick
 
 ```
 
