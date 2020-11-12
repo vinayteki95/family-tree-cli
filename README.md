@@ -2,14 +2,37 @@
 
 Create and manipulate a family tree
 
-# Setup
+Typical usage patterns:
 
-  May be one can write an ansible playbook to take care of this setup but that would probably be an overkill
-  
+Check the file `commandline_test.sh`
+
+```bash
+
+./familytree clear # removes pre-existing persistent files for current testing
+
+./familytree add relationship son nextgen # add a relationship called son of type nextgen
+
+./familytree add relationship wife partner # add a relationship called son of type partner
+
+./familytree add person kid2 # add a person called kid2
+
+./familytree connect kid2 --relation son --of rick # kid2 is son of rick
+
+./familytree count rick --relation son # no of immediate sons of rick
+
+./familytree count rick --relation son --all # no of sons (at all levels of heirarchy) of rick
+
+```
+
+## Setup
+
+May be one can write an ansible playbook to take care of this setup but that would probably be an overkill
+
 ### Clone the repository
+
 ```console
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env$ git clone git@github.com:vinayteki95/family-tree-cli.git
+horus@eye:~/family-tree-cli$ git clone git@github.com:vinayteki95/family-tree-cli.git
 .......
 
 ```
@@ -18,14 +41,14 @@ fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env$ git clone git@github.com:vinay
 
 ```console
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env$ ls
+horus@eye:~/family-tree-cli$ ls
 family-tree-cli
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env$ cd family-tree-cli/
+horus@eye:~/family-tree-cli$ cd family-tree-cli/
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ python3 -m venv venv
+horus@eye:~/family-tree-cli/family-tree-cli$ python3 -m venv venv
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ ls
+horus@eye:~/family-tree-cli/family-tree-cli$ ls
 commandline_test.sh  familytree  README.md  requirements.txt  src  tests  venv
 ```
 
@@ -34,18 +57,18 @@ commandline_test.sh  familytree  README.md  requirements.txt  src  tests  venv
 Also activate the virtual enviroment before installing python dependencies
 
 ```console
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ sudo apt install graphviz
+horus@eye:~/family-tree-cli/family-tree-cli$ sudo apt install graphviz
 
-fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ source venv/bin/activate
+horus@eye:~/family-tree-cli/family-tree-cli$ source venv/bin/activate
 
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ pip install -r requirements.txt 
+(venv) horus@eye:~/family-tree-cli/family-tree-cli$ pip install -r requirements.txt
 ```
 
 ### Verify that the command works - It should provide with a basic help
 
 ```console
 
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ ./familytree 
+(venv) horus@eye:~/family-tree-cli/family-tree-cli$ ./familytree
 Usage: familytree [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -62,24 +85,24 @@ Commands:
   clear
   connect
   count
- 
- ```
- 
- # Tests
- 
- I included the example provided in the assessment as a test so essentially the provided example is verified
- Tests are included in the folder tests: `tests/test_familytree.py` 
- 
- ### Run unit tests
- 
- ```console
 
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ python -m pytest -v
+```
+
+## Tests
+
+I included the example provided in the assessment as a test so essentially the provided example is verified
+Tests are included in the folder tests: `tests/test_familytree.py`
+
+### Run unit tests
+
+```console
+
+(venv) horus@eye:~/family-tree-cli/family-tree-cli$ python -m pytest -v
 ================================================================ test session starts =================================================================
-platform linux -- Python 3.8.5, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /home/fr33b1rd/Projects/marketpulse_tech/doc_env/family-tree-cli/venv/bin/python
+platform linux -- Python 3.8.5, pytest-6.1.2, py-1.9.0, pluggy-0.13.1 -- /home/horus/family-tree-cli/family-tree-cli/venv/bin/python
 cachedir: .pytest_cache
-rootdir: /home/fr33b1rd/Projects/marketpulse_tech/doc_env/family-tree-cli
-collected 4 items                                                                                                                                    
+rootdir: /home/horus/family-tree-cli/family-tree-cli
+collected 4 items
 
 tests/test_familytree.py::test_add_relationship PASSED                                                                                         [ 25%]
 tests/test_familytree.py::test_add_person PASSED                                                                                               [ 50%]
@@ -92,25 +115,24 @@ tests/test_familytree.py::test_count_relation PASSED                            
 ### There is a command line test script as well. You can verify a sample image generated in your default home directory
 
 `~/.familytree/` -> we'll be maintaining a few files here for persistence. I wanted to see if this application can be built on the most basic principles (**files**) without the necessity of a **daemon api** or a **database** for persistence.
- 
+
 ```console
 
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ ./commandline_test.sh 
-/home/fr33b1rd/.familytree/cache.png
-/home/fr33b1rd/.familytree/cache.json
-/home/fr33b1rd/.familytree/cache.graphml
+(venv) horus@eye:~/family-tree-cli/family-tree-cli$ ./commandline_test.sh
+/home/horus/.familytree/cache.png
+/home/horus/.familytree/cache.json
+/home/horus/.familytree/cache.graphml
 
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/doc_env/family-tree-cli$ shotwell ~/.familytree/cache.png
+(venv) horus@eye:~/family-tree-cli/family-tree-cli$ shotwell ~/.familytree/cache.png
 
 ```
 
-
-# Usage and Design Choices
+## Usage and Design Choices
 
 The command line interface provides with the list of options necessary to run a command (use the `--help` option)
 
 ```console
-(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/family-tree-cli$ ./familytree add relationship --help
+(venv) horus@eye:~/Projects/marketpulse_tech/family-tree-cli$ ./familytree add relationship --help
 Usage: familytree add relationship [OPTIONS] RELATION RELATION_TYPE:[prevgen|nextgen|samegen|partner]
 
 Arguments:
@@ -124,13 +146,15 @@ Options:
 ```
 
 ### Design choice for "relationship" entity.
+
 If you look at the above help, it requires two arguments
+
 1. RELATION -> a simple string ("mother", "father", etc)
 2. RELATION_TYPE -> an enum from the choices (prevgen|nextgen|samegen|partner)
-prevgen -> one step above in family tree hierarchy (mother, father)
-nextgen -> one step below in family tree hierarchy (son, daughter)
-samegen -> same level in family tree hierarchy (brother, sister)
-partner -> same level in family tree but common children (wife / step wife / husband / step husband)
+   prevgen -> one step above in family tree hierarchy (mother, father)
+   nextgen -> one step below in family tree hierarchy (son, daughter)
+   samegen -> same level in family tree hierarchy (brother, sister)
+   partner -> same level in family tree but common children (wife / step wife / husband / step husband)
 
 ### Interesting features which emerge out of this property
 
@@ -157,6 +181,7 @@ partner -> same level in family tree but common children (wife / step wife / hus
     ft.connect_people("judith", "richard2", "son")
     ft.connect_people("judith", "thomas", "son")
 ```
+
 If you look at the connections, we did not have to provide multiple connections between (mother, father, daughter, son) to properly infer the count of all sons and grandsons.
 
 This can be expanded by explicitly writing familytree functions to traverse based on the type of relation. Currently it is implemented to handle cases for the assessment but there is enough functional scalability.
@@ -165,8 +190,6 @@ This can be expanded by explicitly writing familytree functions to traverse base
 
 One feature I was hoping to include was to manage mulitple graphs / familytrees. This will also improve the code structure and graph,config file management through the application
 
-# Limitations
+## Limitations
 
 - The main limitation of this application is to stay in the enum range for relation_type. I can easily provide an option to add arbitary relation but without a concrete **type** of a relation which is essentially used to traverse / navigate through relations internally in a graph it'll be impossible to derive any useful outcome.
-
-

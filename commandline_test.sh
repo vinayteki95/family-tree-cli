@@ -18,3 +18,6 @@
 ./familytree connect kid4 --relation daughter --of sri
 ./familytree connect kid2 --relation son --of vinay
 ./familytree connect kid3 --relation son --of sri
+./familytree count surya --relation son --all
+./familytree count vinay --relation son --all
+./familytree count surya --relation son
