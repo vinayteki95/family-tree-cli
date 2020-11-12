@@ -1,6 +1,7 @@
 import gc
 import typer
 from familytree import FamilyTree
+from familytree import RelationType
 
 app = typer.Typer()
 add_app = typer.Typer()
@@ -13,8 +14,8 @@ def add_person(person: str):
     ft.add_person(person)
 
 @add_app.command("relationship")
-def add_relationship(relation: str):
-    ft.add_relationship(relation)
+def add_relationship(relation: str, relation_type: RelationType):
+    ft.add_relationship(relation, relation_type)
 
 @app.command("connect")
 def connect_people(person: str , relation: str = typer.Option(...), of: str = typer.Option(...)):
@@ -30,17 +31,5 @@ def clear():
 
 
 if __name__ == "__main__":
-
-    # ft.add_person("kid1")
-    # ft.add_person("kid2")
-
-    # ft.add_relationship("wife")
-    # ft.add_relationship("son")
-    # ft.add_relationship("husband")
-    # ft.connect_people("vinay", "kid1", "son")
-    # ft.connect_people("vinay", "kid2", "son")
-
-    # print(ft.count_relation("surya", "son", all=True))
-
-    
     app()
+    # ft.count_relation_new("surya", "son", all=True)
