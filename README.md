@@ -65,7 +65,12 @@ Commands:
  
  ```
  
- ### Run unit tests - I included the example provided in the assessment as a test so essentially the provided example is verified (More details below)
+ # Tests
+ 
+ I included the example provided in the assessment as a test so essentially the provided example is verified
+ Tests are included in the folder tests: `tests/test_familytree.py` 
+ 
+ ### Run unit tests
  
  ```console
 
@@ -99,11 +104,69 @@ tests/test_familytree.py::test_count_relation PASSED                            
 
 ```
 
-# Tests
-
 
 # Usage and Design Choices
 
+The command line interface provides with the list of options necessary to run a command (use the `--help` option)
+
+```console
+(venv) fr33b1rd@eye:~/Projects/marketpulse_tech/family-tree-cli$ ./familytree add relationship --help
+Usage: familytree add relationship [OPTIONS] RELATION RELATION_TYPE:[prevgen|nextgen|samegen|partner]
+
+Arguments:
+  RELATION                        [required]
+  RELATION_TYPE:[prevgen|nextgen|samegen|partner]
+                                  [required]
+
+Options:
+  --help  Show this message and exit.
+
+```
+
+### Design choice for "relationship" entity.
+If you look at the above help, it requires two arguments
+1. RELATION -> a simple string ("mother", "father", etc)
+2. RELATION_TYPE -> an enum from the choices (prevgen|nextgen|samegen|partner)
+prevgen -> one step above in family tree hierarchy (mother, father)
+nextgen -> one step below in family tree hierarchy (son, daughter)
+samegen -> same level in family tree hierarchy (brother, sister)
+partner -> same level in family tree but common children (wife / step wife / husband / step husband)
+
+### Interesting features which emerge out of this property
+
+#### Currently implemented
+
+```python
+    ft.connect_people("john shakespeare", "mary arden", "wife")
+    ft.connect_people("john shakespeare", "joan", "daughter")
+    ft.connect_people("john shakespeare", "margaret", "daughter")
+    ft.connect_people("john shakespeare", "joan2", "daughter")
+    ft.connect_people("mary arden", "anne", "daughter")
+    ft.connect_people("mary arden", "gilbert", "son")
+    ft.connect_people("mary arden", "richard", "son")
+    ft.connect_people("mary arden", "edmund", "son")
+    ft.connect_people("mary arden", "william", "son")
+    ft.connect_people("william", "anne hathaway", "wife")
+    ft.connect_people("william", "hamnet", "son")
+    ft.connect_people("william", "susanna", "daughter")
+    ft.connect_people("william", "judith", "daughter")
+    ft.connect_people("john hall", "susanna", "wife")
+    ft.connect_people("thomas quiney", "judith", "wife")
+    ft.connect_people("susanna", "elizabeth", "daughter")
+    ft.connect_people("judith", "shakespeare", "son")
+    ft.connect_people("judith", "richard2", "son")
+    ft.connect_people("judith", "thomas", "son")
+```
+If you look at the connections, we did not have to provide multiple connections between (mother, father, daughter, son) to properly infer the count of all sons and grandsons.
+
+This can be expanded by explicitly writing familytree functions to traverse based on the type of relation. Currently it is implemented to handle cases for the assessment but there is enough functional scalability.
+
+#### Scope
+
+One feature I was hoping to include was to manage mulitple graphs / familytrees. This will also improve the code structure and graph,config file management through the application
+
 # Limitations
 
-# Scope
+- The main limitation of this application is to stay in the enum range for relation_type. I can easily provide an option to add arbitary relation but without a concrete **type** of a relation which is essentially used to traverse / navigate through relations internally in a graph it'll be impossible to derive any useful outcome.
+
+
