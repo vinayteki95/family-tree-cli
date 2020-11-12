@@ -1,5 +1,5 @@
 #!/bin/bash
-python run.py clear
+python run.py clear # removes pre-existing persistent files for current testing
 python run.py add relationship son nextgen
 python run.py add relationship daughter nextgen
 python run.py add relationship wife partner
